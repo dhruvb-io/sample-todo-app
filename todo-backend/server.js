@@ -2,7 +2,6 @@ const express = require("express")
 const cors = require("cors")
 const bodyParser = require("body-parser")
 const dotenv = require("dotenv")
-const connectDB = require("./db")
 const todoRoutes = require("./routes/todoRoutes")
 
 dotenv.config()
@@ -13,10 +12,5 @@ app.use(bodyParser.json())
 app.use(express.json())
 app.use('/api', todoRoutes)
 
-connectDB()
-
-const PORT = process.env.PORT;
-app.listen(PORT,()=>{
-    console.log(`Server is running on the port ${PORT}`)
-})
+module.exports = app;
 // app.use()
