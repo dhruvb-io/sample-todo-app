@@ -14,6 +14,8 @@ The Git history shows these milestones:
 | `2dfdf00` | 2026-09-11 | Components were added |
 | `d6475d4` | 2026-09-11 | React frontend was added |
 | `49e6ad2` | 2026-09-15 | Backend section was updated |
+| `8606460` | 2026-09-16 | Todo deletion API and tests were added |
+| `09de2b2` | 2026-09-16 | README learning notes were added |
 
 The project is split into two independent Node.js projects:
 
@@ -36,6 +38,7 @@ The basic workflow is:
 6. The backend returns the saved todo as JSON.
 
 The backend also has a `GET` endpoint that reads all todos from MongoDB and returns them to a client.
+It also has a `DELETE` endpoint that removes a todo by its MongoDB ID and returns the deleted document.
 
 ## 3. Backend Concepts
 
@@ -84,7 +87,7 @@ Middleware is code that runs during the request/response process. It can parse d
 | `POST` | `/api/add-todo` | `addTodo` | Create one todo |
 | `DELETE` | `/api/delete-todo/:id` | `deleteTodo` | Delete one todo by ID |
 
-An HTTP method describes the kind of operation. `GET` reads data, while `POST` submits data to create something new.
+An HTTP method describes the kind of operation. `GET` reads data, `POST` creates something new, and `DELETE` removes an existing resource.
 
 ### 3.5 Controller Layer
 
@@ -93,6 +96,8 @@ An HTTP method describes the kind of operation. `GET` reads data, while `POST` s
 The `getTodos` controller calls `Todo.find()`, waits for the database promise with `await`, and sends the result with status `200`.
 
 The `addTodo` controller reads a title, constructs a `Todo`, calls `.save()`, and returns the saved document. The `try/catch` blocks convert unexpected failures into an HTTP `500` response.
+
+The `deleteTodo` controller requires an ID route parameter, calls `Todo.findByIdAndDelete()`, and returns the deleted document with status `200`. It returns `400` when the ID is missing, `404` when no matching todo exists, and `500` for an unexpected database error.
 
 The response object is sent as JSON. JSON is a text-based data format commonly used to exchange JavaScript-like objects between a frontend and a backend.
 
@@ -191,6 +196,8 @@ The `fetch` call sends an asynchronous HTTP request:
 
 An integration test checks that routes, controllers, models, and database behavior work together. It is broader than a unit test.
 
+The integration suite also verifies that `DELETE /api/delete-todo/:id` removes an existing document from the temporary database.
+
 ### 5.3 Frontend Tests
 
 The frontend uses Jest and React Testing Library. `setupTests.js` loads DOM matchers such as `toBeInTheDocument()`.
@@ -249,7 +256,7 @@ npm run build
 
 These are the next items to understand or fix. They are recorded here so later work can be compared with the current baseline.
 
-1. **Frontend request field mismatch:** `AddTodo.js` sends `{ todo }`, but `addTodo` reads `req.body.title`. The frontend and backend should agree on one field name, most likely `{ title: todo }`.
+1. **Frontend request field mismatch:** `AddTodo.js` still sends `{ todo }`, but `addTodo` reads `req.body.title`. The new delete API is implemented only on the backend; the frontend has no delete control. The frontend and backend should agree on one field name, most likely `{ title: todo }`.
 2. **No frontend todo list:** the frontend currently only renders the add form. It does not fetch or display saved todos.
 3. **No completion workflow:** there is a `completed` field in the schema, but no route or UI updates it.
 4. **Generated frontend test is stale:** `App.test.js` expects the removed "learn react" link.
@@ -267,6 +274,6 @@ These are the next items to understand or fix. They are recorded here so later w
 4. Read `todoModel.js` and compare the schema with the JSON returned by the API.
 5. Run the unit tests, then the integration tests, and compare what each one proves.
 6. Fix the `todo` versus `title` mismatch and update the frontend test.
-7. Add a GET request in the frontend to display saved todos.
+7. Add GET and DELETE requests in the frontend to display and remove saved todos.
 
 The most important full-stack idea is that every layer must agree on the contract: the frontend field name, route URL, HTTP method, controller logic, schema fields, and response shape all need to match.
