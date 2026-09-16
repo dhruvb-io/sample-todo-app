@@ -5,10 +5,12 @@ jest.mock("../models/todoModel.js")
 
 const mockSave = jest.fn();
 const mockFind = jest.fn();
+const mockFindByIdAndDelete = jest.fn();
 
 const Todo = require("../models/todoModel")
 
 Todo.find = mockFind
+Todo.findByIdAndDelete = mockFindByIdAndDelete
 Todo.mockImplementation(()=>({
     save: mockSave
 }))
@@ -75,6 +77,51 @@ describe("For addTodo Function", () =>{
         expect(mockFind).toHaveBeenCalled()
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith({message: errorMessage})
+    })
+})
+
+describe("For deleteTodo Function", () =>{
+    it("should delete and return a todo", async () => {
+        const deletedTodo = {_id: "1", title: "Todo to delete"}
+        req.params = {id: "1"}
+        mockFindByIdAndDelete.mockResolvedValue(deletedTodo)
+
+        await todoController.deleteTodo(req, res)
+
+        expect(mockFindByIdAndDelete).toHaveBeenCalledWith("1")
+        expect(res.status).toHaveBeenCalledWith(200)
+        expect(res.json).toHaveBeenCalledWith(deletedTodo)
+    })
+
+    it("should return not found when the todo does not exist", async () => {
+        req.params = {id: "missing-id"}
+        mockFindByIdAndDelete.mockResolvedValue(null)
+
+        await todoController.deleteTodo(req, res)
+
+        expect(mockFindByIdAndDelete).toHaveBeenCalledWith("missing-id")
+        expect(res.status).toHaveBeenCalledWith(404)
+        expect(res.json).toHaveBeenCalledWith({message: "Todo not found"})
+    })
+
+    it("should return bad request when the todo ID is missing", async () => {
+        mockFindByIdAndDelete.mockClear()
+
+        await todoController.deleteTodo(req, res)
+
+        expect(mockFindByIdAndDelete).not.toHaveBeenCalled()
+        expect(res.status).toHaveBeenCalledWith(400)
+        expect(res.json).toHaveBeenCalledWith({message: "Todo ID is required"})
+    })
+
+    it("should handle delete errors", async () => {
+        req.params = {id: "1"}
+        mockFindByIdAndDelete.mockRejectedValue(new Error("Database error"))
+
+        await todoController.deleteTodo(req, res)
+
+        expect(res.status).toHaveBeenCalledWith(500)
+        expect(res.json).toHaveBeenCalledWith({message: "Something went wrong, please try later"})
     })
 })
 

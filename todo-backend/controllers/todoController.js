@@ -40,3 +40,22 @@ exports.addTodo = async (req,res)=>{
         
 }
 
+exports.deleteTodo = async (req, res) => {
+    try {
+        if (!req.params.id) {
+            return res.status(400).json({message: "Todo ID is required"})
+        }
+
+        const deletedTodo = await Todo.findByIdAndDelete(req.params.id)
+
+        if (!deletedTodo) {
+            return res.status(404).json({message: "Todo not found"})
+        }
+
+        res.status(200).json(deletedTodo)
+    } catch (error) {
+        logger.error("Error while deleting the todo", error)
+        res.status(500).json({message: "Something went wrong, please try later"})
+    }
+}
+

@@ -51,4 +51,19 @@ describe("Todo API Integration test", () =>{
 
         })
     })
+
+    describe("DELETE /api/delete-todo/:id", ()=>{
+        it("should delete an existing todo", async () =>{
+            const todo = await Todo.create({title: "Todo to delete"})
+
+            const response = await request(app).delete(`/api/delete-todo/${todo._id}`)
+
+            expect(response.status).toBe(200)
+            expect(response.body._id).toBe(todo._id.toString())
+            expect(response.body.title).toBe("Todo to delete")
+
+            const deletedTodo = await Todo.findById(todo._id)
+            expect(deletedTodo).toBeNull()
+        })
+    })
 })
