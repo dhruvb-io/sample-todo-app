@@ -1,7 +1,7 @@
 import React from "react"
 
-import {render, fireEvent, screen} from "@testing-library/react"
-import AddTodo from "../../components/AddTodo"
+import {render, screen} from "@testing-library/react"
+import AddTodo from "../components/AddTodo"
 
 describe("Testing the Add Todo component", ()=>{
     test("Render the input filed and add button", ()=>{
