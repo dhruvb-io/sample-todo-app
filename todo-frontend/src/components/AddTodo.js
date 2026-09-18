@@ -1,25 +1,14 @@
 import React, {useState} from 'react'
 
-const AddTodo = ()=>{
-    const [todo, setTodo] = useState('This is a new state')
+const AddTodo = ({ onAdd })=>{
+    const [todo, setTodo] = useState('')
 
     const handleSubmit = async (e) =>{
         e.preventDefault();
+        if(!todo) return;
         console.log(todo)
-        try{
-            const response = await fetch('http://localhost:3001/api/add-todo',{
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({todo})
-        })
-
-        console.log("Response received", response)
-
-        }catch(err){
-            console.log("Error occurred while adding todo", err)
-        }
+        onAdd(todo);
+        setTodo('');
     }
 
     return (
@@ -28,6 +17,8 @@ const AddTodo = ()=>{
                 type="text"
                 value={todo}
                 onChange={(e)=> setTodo(e.target.value) }
+                placeholder='Add a new Todo'
+                required
             />
 
             <button type="submit">Add Todo</button>

@@ -1,11 +1,10 @@
-import logo from './logo.svg';
-import './App.css';
-import AddTodo from './components/AddTodo';
+import './styles.css';
+import TodoList from './components/TodoList';
 
 function App() {
   return (
     <div className="App">
-      <AddTodo></AddTodo>
+      <TodoList></TodoList>
       {/* <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
