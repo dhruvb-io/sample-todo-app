@@ -1,16 +1,16 @@
 import React from "react"
 
-const TodoItem = ({todo}) =>{
+const TodoItem = ({ todo, onDelete }) => {
     return (
-        <li>
-            {todo.title} {todo.completed}
-            <button> Delete </button>
-
-        </li>
-
+        <tr>
+            <td>{todo.title}</td>
+            <td>
+                <button type="button" onClick={() => onDelete(todo._id)}>
+                    Delete
+                </button>
+            </td>
+        </tr>
     )
-
 }
-
 
 export default TodoItem

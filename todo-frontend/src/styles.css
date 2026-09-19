@@ -46,7 +46,26 @@ buttom:hover {
     background-color: #218838;
 }
 
-ul {
-    list-style-type: none;
-    padding: 0;
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+th,
+td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+    overflow-wrap: anywhere;
+}
+
+th:last-child,
+td:last-child {
+    width: 110px;
+    text-align: center;
+}
+
+td button {
+    white-space: nowrap;
 }
